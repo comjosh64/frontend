@@ -13,7 +13,6 @@ from nltk.collocations import *
 from neo4jrestclient.client import GraphDatabase
 
 NEO4J_IP_ADDRESS = 'localhost:7474/db/data/'
-DOMAIN = ''
 def parseNoun( textfile ) : 
     #takes a file object returns frequency minus trivial nouns
     sentences = nltk.sent_tokenize(textfile.read().lower())
@@ -42,20 +41,22 @@ def makeColocations(document):
         storeCollocations(tri)
 
 
-def storeCollocations(trigram):
+def storeCollocations(trigram, Domain = DOMAIN):
     gdb = GraphDatabase(NEO4J_IP_ADDRESS)
-    gdb.nodes.create(token = trigram[0])
-    gdb.relationships.create(token = trigram[1] )
-    gdb.nodes.create(token = trigram[2] )
+    gdb.nodes.create(token = trigram[0] , domain = Domain) 
+    gdb.relationships.create(token = trigram[1], domain = Domain)
+    gdb.nodes.create(token = trigram[2] , domain = Domain)
 
 def ingest(absolutePath):
     print os.listdir(absolutePath)
     for document in os.listdir(directory):
-        print os.path.join(absolutePath,document)
-        dirpath = os.path.join(absolutePath,document)
         if not os.path.isdir(dirpath):
-            f = open(dirpath)
+            print "ingesting path",
+            print os.path.join(absolutePath,document)
+            docpath = os.path.join(absolutePath,document)
+            f = open(docpath)
             text = f.read()
+            # could use fork here
             makeColocations(text)
 
 
