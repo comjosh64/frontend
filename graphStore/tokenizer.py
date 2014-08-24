@@ -33,8 +33,9 @@ def parseNoun( textfile ) :
     
 def makeColocations(document):
     # collocation trigrams
-    trigram_measures =  nltk.collocations.BigramAssocMeasures()
-    finder = TrigramCollocaionFinder.from_words(document)
+    tokens = nltk.sent_tokenize(document)
+    trigram_measures =  nltk.collocations.TrigramAssocMeasures()
+    finder = nltk.TrigramCollocaionFinder.from_words(document)
     trigrams = finder.nbest(trigram_measures.pmi, 3)
     for tri in trigrams: 
         storeCollocations(tri)
